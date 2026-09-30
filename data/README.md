@@ -6,12 +6,12 @@ Isi informasi berikut sebelum Milestone 1.
 
 | Item | Isi |
 |---|---|
-| Nama dataset | `[isi nama dataset]` |
-| Sumber | `[URL BPS / Satu Data Indonesia / BMKG / HuggingFace / Kaggle]` |
-| Lisensi/ketentuan pakai | `[isi]` |
-| Ukuran | `[>= 500 MB atau > 1.000.000 baris]` |
-| Periode data | `[isi]` |
-| Unit analisis | `[isi]` |
+| Nama dataset | `Indonesia Wikipedia Pages` |
+| Sumber | `https://www.kaggle.com/datasets/greegtitan/indonesia-wikipedia-pages/data` |
+| Lisensi/ketentuan pakai | `CC BY-SA 3.0` |
+| Ukuran | `1.07 GB` |
+| Periode data | `2015 - 2022` |
+| Unit analisis | `Satu halaman/artikel Wikipedia (mengandung atribut id, title, text)` |
 
 ## Tempat Mencari Dataset
 
@@ -38,3 +38,19 @@ Pilih dataset Indonesia yang legal digunakan, dapat didokumentasikan sumbernya, 
 - Jangan commit dataset mentah atau hasil olahan berukuran besar ke Git.
 - File pada `data/raw/` adalah data asli dan tidak boleh diubah.
 - Simpan hasil transformasi yang dapat direproduksi pada `data/processed/`.
+
+# Data Source: Indonesia Wikipedia Pages
+
+Dataset ini tidak di-commit ke repositori karena ukurannya melebihi batasan (1.07 GB).
+
+## Detail Dataset
+- **Sumber:** https://www.kaggle.com/datasets/greegtitan/indonesia-wikipedia-pages/data?select=wikipedia_id-clean.csv
+- **Lisensi:** CC BY-SA 3.0 / 4.0
+- **File yang digunakan:** `wikipedia_id-clean.csv`
+
+## Instruksi Unduhan (Reproducibility)
+Untuk menjalankan kode di repositori ini, ikuti langkah berikut:
+1. Buka tautan sumber dataset di atas.
+2. Unduh secara spesifik file bernama `wikipedia_id-clean.csv`.
+3. Letakkan file tersebut di dalam folder `data/raw/` tanpa mengubah namanya.
+4. Pastikan file terdeteksi sebesar ~1.07 GB.
