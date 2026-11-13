@@ -1,6 +1,76 @@
 # Tugas 1: Eksplorasi dan Analisis Dataset Besar Indonesia
 
-Template untuk Tugas 1 mata kuliah Analisis Big Data. Setelah repository GitHub Classroom dibuat, ubah nama repository menjadi `tugas1-[username_github]`.
+Proyek Analisis Big Data 2026 ini mengolah **1.550.872 record halaman Wikipedia bahasa Indonesia** dari file CSV berukuran **3,01 GB**. Analisis melihat sebaran waktu yang tercatat pada dataset serta perbedaan panjang teks menurut jenis halaman. Sumber, skema, dan petunjuk unduh ada di [dokumentasi data](data/README.md).
+
+## Alur analisis
+
+| Notebook | Proses dan keluaran |
+|---|---|
+| [01 — Data Profiling](notebooks/01_data_profiling.ipynb) | Memeriksa skema CSV, nilai kosong, keunikan ID, dan rentang timestamp menggunakan Polars serta DuckDB `SUMMARIZE`. |
+| [02 — Data Cleaning](notebooks/02_data_cleaning.ipynb) | Menangani nilai kosong dan pencilan panjang teks, memeriksa duplikasi berdasarkan ID, lalu memvalidasi data dengan DuckDB. Hasilnya adalah Parquet dengan 1.550.872 record dan 7 kolom. |
+| [03 — EDA and Insights](notebooks/03_eda_and_insights.ipynb) | Membaca Parquet, mengelompokkan record per bulan dengan Polars `group_by_dynamic()`, lalu menyajikan rata-rata bergerak tiga bulan, enam grafik interaktif Plotly, dan lima insight. |
+
+## Temuan utama
+
+- **31,6% record** memiliki timestamp pada 2022, dengan cakupan sampai 20 November UTC. Perbandingan Januari–Oktober menunjukkan 441.673 record pada 2022 dan 222.313 pada 2021.
+- **39,3% record** terdeteksi sebagai halaman pengalihan berdasarkan awalan `#ALIH` atau `#REDIRECT`. Median panjang teks sumber adalah 34 karakter untuk pengalihan dan 1.089 karakter untuk kelompok halaman lain.
+- Korelasi Spearman antara panjang judul dan teks adalah **0,01** pada data gabungan yang dianalisis, **0,62** pada halaman pengalihan, dan **−0,43** pada kelompok halaman lain.
+
+Analisis waktu menghitung record berdasarkan timestamp yang tersedia. Panjang teks dihitung dari teks sumber, termasuk markup Wikipedia. Metode dan grafik pendukung tersedia di [Notebook 3](notebooks/03_eda_and_insights.ipynb).
+
+## Menjalankan proyek dengan Docker
+
+1. Nyalakan Docker Desktop. Jika folder proyek belum ada, clone fork ini. Jika sudah ada, buka PowerShell di folder proyek.
+
+   ```powershell
+   git clone https://github.com/AyamDjago/tugas1-abd-2026.git
+   cd tugas1-abd-2026
+   ```
+
+2. Jika image `tugas1-bigdata` belum tersedia, bangun image dari folder proyek. Pada clone baru, lakukan ini sebelum mengunduh dataset agar file besar tidak ikut masuk ke konteks build.
+
+   ```powershell
+   docker build -t tugas1-bigdata .
+   ```
+
+3. Unduh `wikipedia_id-raw.csv` dan letakkan di `data/raw/` sesuai [petunjuk unduh](data/README.md#cara-memperoleh-data). Notebook 01 dan 02 sudah memakai nama dan lokasi file tersebut.
+
+4. Buat dan jalankan container dari folder proyek. Folder itu dipasang ke `/home/jovyan/work`, sehingga notebook membaca data lokal dan hasil cleaning tersimpan kembali di folder proyek.
+
+   ```powershell
+   $repoTugas = (Get-Location).Path
+   docker run -d --name tugas1-abd-jupyter -p 127.0.0.1:8888:8888 --mount "type=bind,source=$repoTugas,target=/home/jovyan/work" tugas1-bigdata
+   ```
+
+   Jika container tersebut sudah dibuat dan sedang berhenti, jalankan `docker start tugas1-abd-jupyter`. JupyterLab memakai akses lokal melalui `127.0.0.1`.
+
+5. Buka [JupyterLab](http://127.0.0.1:8888/lab), masuk ke folder `notebooks/`, lalu jalankan **Run → Run All Cells** pada notebook 01, 02, dan 03 secara berurutan. Notebook 02 membuat `data/processed/wikipedia_id-bersih.parquet`, yang menjadi input Notebook 03. Buka Notebook 03 melalui JupyterLab untuk berinteraksi dengan grafik.
+
+Untuk menghentikan JupyterLab, jalankan `docker stop tugas1-abd-jupyter`.
+
+## Struktur repository
+
+```text
+.
+├── .github/workflows/lint_check.yml
+├── data/
+│   ├── README.md
+│   ├── raw/          # CSV yang diunduh
+│   └── processed/    # Parquet yang dibuat Notebook 02
+├── notebooks/
+│   ├── 01_data_profiling.ipynb
+│   ├── 02_data_cleaning.ipynb
+│   └── 03_eda_and_insights.ipynb
+├── src/
+├── Dockerfile
+├── requirements.txt
+├── identitas.md
+└── README.md
+```
+
+## Ketentuan tugas
+
+Template berasal dari [repository tugas dosen](https://github.com/UMM-GURU/tugas1-abd-2026). Setelah repository GitHub Classroom dibuat, gunakan format nama `tugas1-[username_github]` sesuai instruksi template.
 
 ## Milestone
 
@@ -48,166 +118,9 @@ Nilai Tugas 1 berbobot 25% dari nilai akhir. Penilaian lengkap ada di dokumen sp
 
 Target kualitas tertinggi adalah analisis yang efisien, terdokumentasi, dapat direproduksi, dan memperlihatkan proses kerja konsisten sepanjang milestone; bukan hanya hasil akhir yang terlihat baik.
 
-## Struktur Repository
+## Verifikasi pengumpulan
 
-```text
-.
-├── .github/workflows/lint_check.yml
-├── data/README.md
-├── notebooks/
-│   ├── 01_data_profiling.ipynb
-│   ├── 02_data_cleaning.ipynb
-│   └── 03_eda_and_insights.ipynb
-├── output/figures/
-├── src/
-├── Dockerfile
-├── requirements.txt
-└── README.md
-```
-
-# Tugas 1 Analisis Big Data 2026
-
-## Persiapan GitHub
-
-### 1. Fork Repository Tugas
-
-Fork repository berikut ke akun GitHub masing-masing:
-
-https://github.com/UMM-GURU/tugas1-abd-2026.git
-
-Langkah-langkah:
-
-1. Login ke GitHub.
-2. Buka repository tugas.
-3. Klik tombol **Fork** di pojok kanan atas.
-4. Tunggu hingga GitHub membuat salinan repository ke akun Anda.
-
-Setelah selesai, Anda akan memiliki repository dengan alamat seperti:
-
-```text
-https://github.com/USERNAME-ANDA/tugas1-abd-2026.git
-```
-
----
-
-### 2. Clone Repository Hasil Fork
-
-Buka Terminal, Git Bash, atau Command Prompt lalu jalankan:
-
-```bash
-git clone https://github.com/USERNAME-ANDA/tugas1-abd-2026.git
-cd tugas1-abd-2026
-```
-
-Ganti `USERNAME-ANDA` dengan username GitHub Anda.
-
----
-
-## Menjalankan Project
-
-Pastikan Docker sudah terpasang pada komputer Anda.
-
-### Build Docker Image
-
-```bash
-docker build -t tugas1-bigdata .
-```
-
-### Jalankan Container
-
-```bash
-docker run --rm -p 8888:8888 -v "$(pwd)":/home/jovyan/work tugas1-bigdata
-```
-
-### Membuka JupyterLab
-
-Buka browser dan akses:
-
-http://localhost:8888/lab
-
-> **Catatan:** Konfigurasi Dockerfile menjalankan JupyterLab tanpa password atau token untuk penggunaan lokal. Jangan gunakan konfigurasi ini pada server atau jaringan publik.
-
----
-
-## Menyiapkan Dataset
-
-1. Letakkan dataset yang akan digunakan pada folder:
-
-```text
-data/raw/
-```
-
-2. Buka notebook profiling atau notebook yang digunakan.
-3. Sesuaikan nilai variabel `DATA_PATH` agar mengarah ke file dataset yang Anda gunakan.
-
-Contoh:
-
-```python
-DATA_PATH = "data/raw/nama_dataset.csv"
-```
-
----
-
-## Mengerjakan Tugas
-
-1. Baca seluruh instruksi yang terdapat pada notebook.
-2. Kerjakan setiap bagian sesuai perintah.
-3. Simpan perubahan secara berkala.
-
----
-
-## Commit Perubahan
-
-Setelah tugas selesai dikerjakan, simpan hasil pekerjaan ke Git menggunakan perintah berikut:
-
-```bash
-git add .
-git commit -m "Menyelesaikan Tugas 1 Analisis Big Data"
-```
-
-Anda dapat mengganti pesan commit sesuai kebutuhan.
-
----
-
-## Push ke Repository GitHub
-
-Kirim hasil pekerjaan ke repository GitHub milik Anda:
-
-```bash
-git push origin main
-```
-
-Apabila branch utama bernama `master`, gunakan:
-
-```bash
-git push origin master
-```
-
----
-
-## Verifikasi Pengumpulan
-
-1. Buka repository GitHub milik Anda.
-2. Pastikan file yang telah dikerjakan sudah muncul.
-3. Pastikan terdapat minimal satu commit hasil pekerjaan Anda.
-4. Salin URL repository Anda untuk keperluan penilaian jika diminta dosen.
-
-Contoh URL repository:
-
-```text
-https://github.com/USERNAME-ANDA/tugas1-abd-2026
-```
-
----
-
-## Menjalankan Project
-
-```bash
-docker build -t tugas1-bigdata .
-docker run --rm -p 8888:8888 -v "$(pwd)":/home/jovyan/work tugas1-bigdata
-```
-
-Buka JupyterLab pada `http://localhost:8888/lab`. Konfigurasi Dockerfile menjalankan JupyterLab tanpa password atau token untuk penggunaan lokal. Jangan gunakan konfigurasi ini pada server atau jaringan publik. Letakkan dataset pada `data/raw/`, lalu sesuaikan `DATA_PATH` di notebook profiling.
+Periksa perubahan dengan `git status`, lalu buat commit bertahap dengan pesan deskriptif. Setelah menjalankan `git push origin main`, buka repository fork di GitHub untuk memastikan file tugas dan commit milestone tersedia. Bagikan URL repository jika diminta dosen.
 
 ## Aturan Teknis
 
@@ -227,10 +140,10 @@ Buka JupyterLab pada `http://localhost:8888/lab`. Konfigurasi Dockerfile menjala
 
 ## AI Disclosure Statement
 
-Isi bagian ini sebelum pengumpulan akhir.
+**Alat AI yang digunakan.** OpenAI Codex.
 
-> Alat AI yang digunakan: [nama alat].
->
-> Bagian yang dibantu: [contoh: penjelasan error Polars atau review dokumentasi].
->
-> Verifikasi yang dilakukan: [contoh: menjalankan ulang kode, memeriksa dokumentasi resmi, dan memahami setiap cell].
+**Bagian yang dibantu.** Penjelasan alur Notebook 1 dan 2, implementasi analisis temporal dan visualisasi Notebook 3, penyusunan insight dari hasil analisis, penyiapan Docker dan JupyterLab, serta perapian dokumentasi.
+
+**Verifikasi teknis.** Codex menjalankan seluruh sel Notebook 3 di Docker terhadap Parquet hasil Notebook 2 dan memeriksa bahwa enam keluaran Plotly tersimpan serta dapat diakses melalui JupyterLab.
+
+**Verifikasi mandiri mahasiswa.** [Catat pemeriksaan yang benar-benar dilakukan sebelum pengumpulan.]

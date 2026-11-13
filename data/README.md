@@ -1,56 +1,37 @@
 # Data Tugas 1
 
-## Dataset yang Dipilih
+## Indonesia Wikipedia Pages
 
-Isi informasi berikut sebelum Milestone 1.
-
-| Item | Isi |
+| Item | Keterangan |
 |---|---|
-| Nama dataset | `Indonesia Wikipedia Pages` |
-| Sumber | `https://www.kaggle.com/datasets/greegtitan/indonesia-wikipedia-pages/data` |
-| Lisensi/ketentuan pakai | `CC BY-SA 3.0` |
-| Ukuran | `3.01 GB` |
-| Periode data | `2015 - 2022` |
-| Unit analisis | `Satu halaman/artikel Wikipedia (mengandung atribut id, title, text)` |
+| Sumber | [Indonesia Wikipedia Pages, diunggah oleh greegtitan di Kaggle](https://www.kaggle.com/datasets/greegtitan/indonesia-wikipedia-pages) |
+| Lisensi dataset di Kaggle | [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/) |
+| File yang digunakan | `wikipedia_id-raw.csv` |
+| Ukuran CSV | 3.010.074.263 byte, sekitar 3,01 GB |
+| Isi CSV | 1.550.872 record dan 6 kolom |
+| Unit analisis | Satu record halaman Wikipedia bahasa Indonesia, termasuk halaman pengalihan |
+| Rentang timestamp teramati | 19 April 2004 13:00:14 hingga 20 November 2022 10:49:11 UTC |
 
-## Tempat Mencari Dataset
+Rentang di atas berasal dari nilai minimum dan maksimum kolom `timestamp` yang diperiksa di [Notebook 1](../notebooks/01_data_profiling.ipynb).
 
-Pilih dataset Indonesia yang legal digunakan, dapat didokumentasikan sumbernya, dan memenuhi batas ukuran tugas.
-
-| Situs | Kegunaan |
+| Kolom | Isi |
 |---|---|
-| [Satu Data Indonesia](https://data.go.id/) | Portal data terbuka lintas instansi pemerintah Indonesia. |
-| [Badan Pusat Statistik](https://www.bps.go.id/) | Statistik sosial, ekonomi, kependudukan, dan data wilayah. |
-| [BMKG Data Online](https://dataonline.bmkg.go.id/) | Data cuaca, iklim, gempa bumi, dan observasi meteorologi. |
-| [Hugging Face Datasets](https://huggingface.co/datasets) | Dataset publik yang dapat dicari berdasarkan topik, bahasa, atau ukuran. |
-| [Kaggle Datasets](https://www.kaggle.com/datasets) | Katalog dataset publik; periksa lisensi dan dokumentasi pembuatnya. |
-| [Google Dataset Search](https://datasetsearch.research.google.com/) | Mesin pencari untuk menemukan dataset dari berbagai portal. |
+| `id` | Pengenal record yang dipakai sebagai kunci deduplikasi |
+| `parent_id` | ID referensi yang dapat bernilai kosong |
+| `timestamp` | Waktu yang tercatat pada record dalam format ISO UTC |
+| `hash` | Nilai hash yang disediakan di dataset |
+| `title` | Judul halaman |
+| `text` | Teks sumber halaman, termasuk markup Wikipedia |
 
-## Cara Memperoleh Data
+## Cara memperoleh data
 
-1. Buka URL sumber di atas.
-2. Unduh file ke folder `data/raw/` tanpa mengubah data mentah.
-3. Catat nama file dan checksum bila tersedia.
-4. Ubah variabel `DATA_PATH` pada `notebooks/01_data_profiling.ipynb` agar menunjuk ke file tersebut.
+1. Buka [halaman file dataset di Kaggle](https://www.kaggle.com/datasets/greegtitan/indonesia-wikipedia-pages/data?select=wikipedia_id-raw.csv).
+2. Unduh `wikipedia_id-raw.csv`. Jika unduhan berbentuk arsip, ekstrak CSV dari arsip tersebut.
+3. Letakkan CSV di `data/raw/wikipedia_id-raw.csv` dengan nama aslinya. Buat folder `data/raw/` jika belum ada. Ukuran CSV yang sudah diekstrak sekitar 3,01 GB.
+4. Ikuti [panduan Docker dan JupyterLab](../README.md#menjalankan-proyek-dengan-docker) untuk menjalankan notebook secara berurutan.
 
-## Aturan Penyimpanan
+## Data hasil pengolahan
 
-- Jangan commit dataset mentah atau hasil olahan berukuran besar ke Git.
-- File pada `data/raw/` adalah data asli dan tidak boleh diubah.
-- Simpan hasil transformasi yang dapat direproduksi pada `data/processed/`.
+[Notebook 2](../notebooks/02_data_cleaning.ipynb) membuat `data/processed/wikipedia_id-bersih.parquet` dengan 1.550.872 record, enam kolom asal, dan kolom tambahan `panjang_teks`. Kolom tambahan ini dibatasi pada 3.506 karakter saat cleaning. [Notebook 3](../notebooks/03_eda_and_insights.ipynb) menghitung ulang panjang asli dari `text` untuk analisis distribusi.
 
-# Data Source: Indonesia Wikipedia Pages
-
-Dataset ini tidak di-commit ke repositori karena ukurannya melebihi batasan (1.07 GB).
-
-## Detail Dataset
-- **Sumber:** https://www.kaggle.com/datasets/greegtitan/indonesia-wikipedia-pages/data?select=wikipedia_id-raw.csv
-- **Lisensi:** CC BY-SA 3.0 / 4.0
-- **File yang digunakan:** `wikipedia_id-raw.csv`
-
-## Instruksi Unduhan (Reproducibility)
-Untuk menjalankan kode di repositori ini, ikuti langkah berikut:
-1. Buka tautan sumber dataset di atas.
-2. Unduh secara spesifik file bernama `wikipedia_id-raw.csv`.
-3. Letakkan file tersebut di dalam folder `data/raw/` tanpa mengubah namanya.
-4. Pastikan file terdeteksi sebesar ~3.01 GB.
+Simpan CSV mentah di `data/raw/` dan hasil pengolahan di `data/processed/`. Kedua folder data diabaikan oleh Git sehingga file besar tetap disimpan secara lokal.
