@@ -140,10 +140,10 @@ Periksa perubahan dengan `git status`, lalu buat commit bertahap dengan pesan de
 
 ## AI Disclosure Statement
 
-**Alat AI yang digunakan.** OpenAI Codex.
+Isi bagian ini sebelum pengumpulan akhir.
 
-**Bagian yang dibantu.** Penjelasan alur Notebook 1 dan 2, implementasi analisis temporal dan visualisasi Notebook 3, penyusunan insight dari hasil analisis, penyiapan Docker dan JupyterLab, serta perapian dokumentasi.
-
-**Verifikasi teknis.** Codex menjalankan seluruh sel Notebook 3 di Docker terhadap Parquet hasil Notebook 2 dan memeriksa bahwa enam keluaran Plotly tersimpan serta dapat diakses melalui JupyterLab.
-
-**Verifikasi mandiri mahasiswa.** [Catat pemeriksaan yang benar-benar dilakukan sebelum pengumpulan.]
+> Alat AI yang digunakan: [nama alat].
+>
+> Bagian yang dibantu: [contoh: penjelasan error Polars atau review dokumentasi].
+>
+> Verifikasi yang dilakukan: [contoh: menjalankan ulang kode, memeriksa dokumentasi resmi, dan memahami setiap cell].
